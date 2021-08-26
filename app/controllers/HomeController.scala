@@ -1,5 +1,7 @@
 package controllers
 
+import com.mohiva.play.silhouette.api.LoginInfo
+import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import models.User
 import models.daos.UserDAO
@@ -25,7 +27,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents, u
    * a path of `/`.
    */
   def index() = Action { implicit request: Request[AnyContent] =>
-    userDao.insert(User(Some(BSONObjectID.generate()), UUID.randomUUID(), CredentialsProvider.ID, "ivan@123@gmail.com", "Ivan", "Lytvynenko", Some("123123")))
+    userDao.insert(User(Some(BSONObjectID.generate()), LoginInfo(CredentialsProvider.ID,"ivan@123@gmail.com"),CredentialsProvider.ID, "ivan@123@gmail.com", "Ivan", "Lytvynenko", Some("123123")))
     println(request.cookies.get("authenticator"))
     Ok(views.html.index())
   }

@@ -4,9 +4,10 @@
 # ~~~~
 
 # An example controller showing a sample home page
-POST         /                    controllers.HomeController.index()
-POST        /signUp              controllers.SignUpController.signUp()
-POST        /singIn              controllers.SignInController.signIn()
+POST        /                     controllers.HomeController.index()
+POST        /signUp               controllers.SignUpController.signUp()
+POST        /signIn               controllers.SignInController.signIn()
+POST        /changeCounter        controllers.ChangeCounterController.changeCounter()
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file        controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file         controllers.Assets.versioned(path="/public", file: Asset)

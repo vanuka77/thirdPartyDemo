@@ -1,5 +1,6 @@
 package controllers
 
+import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.util.Credentials
 import play.api.i18n.Lang
@@ -13,8 +14,8 @@ import scala.concurrent.{ExecutionContext, Future}
  * The `Sign In` controller.
  */
 class SignInController @Inject()(
-  scc: SilhouetteControllerComponents
-)(implicit ex: ExecutionContext) extends SilhouetteController(scc) {
+                                  scc: SilhouetteControllerComponents
+                                )(implicit ex: ExecutionContext) extends SilhouetteController(scc) {
 
   case class SignInModel(email: String, password: String)
 
@@ -29,22 +30,20 @@ class SignInController @Inject()(
     implicit val lang: Lang = supportedLangs.availables.head
     request.body.asJson.flatMap(_.asOpt[SignInModel]) match {
       case Some(signInModel) =>
-        val credentials = Credentials(signInModel.email, signInModel.password)
+        val credentials = Credentials("ivan@123@gmail.com", "123123")
         credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
-          userService.retrieve(loginInfo).flatMap {
-            case Some(_) =>
-               for {
-                authenticator <- authenticatorService.create(loginInfo)
-                token <- authenticatorService.init(authenticator)
-                result <- authenticatorService.embed(token, Ok)
-              } yield {
-                  logger.debug(s"User ${loginInfo.providerKey} signed success")
-                  result
-              }
-            case None => Future.successful(BadRequest(JsString(messagesApi("could.not.find.user"))))
-          }
+          for {
+                      authenticator <- silhouette.env.authenticatorService.create(loginInfo)
+                      authToken <- silhouette.env.authenticatorService.init(authenticator)
+                      res <- silhouette.env.authenticatorService.embed(authToken, Ok)
+////                        authId<-cookie.value
+//                        auth<-authInfoRepository.find(loginInfo)
+//                        authenticator <- silhouette.env.authenticatorService.retrieve(request)
+//                        authToken <- silhouette.env.authenticatorService.init(authenticator.get)
+//            res <- silhouette.env.authenticatorService.embed(authToken, Ok)
+          } yield res
         }.recover {
-          case _: ProviderException => BadRequest(JsString(messagesApi("invalid.credentials")))
+          case q: ProviderException => BadRequest(JsString(messagesApi(q.getMessage)))
         }
       case None => Future.successful(BadRequest(JsString(messagesApi("could.not.find.user"))))
     }

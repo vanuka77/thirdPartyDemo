@@ -2,10 +2,12 @@ package models.daos
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import models.User
+import play.api.libs.json.Json
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.Cursor
 import reactivemongo.api.bson.BSONDocument
 import reactivemongo.api.bson.collection.BSONCollection
+import reactivemongo.play.json.compat.json2bson.toDocumentWriter
 
 import java.util.UUID
 import javax.inject.Inject
@@ -22,9 +24,6 @@ class UserDAO @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit ex: Exe
     super.find(query)
   }
 
-  def findById(id: String): Future[Option[User]] = {
-    val query = BSONDocument("id" -> id)
-    super.find(query)
-  }
+  def save(user: User): Future[User] = super.insert(user)
 
 }

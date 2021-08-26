@@ -1,22 +1,21 @@
 package models
 
+import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
-import play.api.libs.json.Json
-import reactivemongo.api.bson.{BSONObjectID, Macros}
-
-import java.util.UUID
+import com.mohiva.play.silhouette.password.BCryptSha256PasswordHasher
+import play.api.libs.json.{Format, Json, OFormat}
+import reactivemongo.api.bson.{BSONDocumentReader, BSONObjectID, Macros}
 
 case class User(
                  _id: Option[BSONObjectID],
-                 id: UUID,
+                 loginInfo: LoginInfo,
                  credentialProviderId: String,
                  email: String,
                  name: String,
                  lastName: String,
-                 password: Option[String] = None
-               ) extends Identity {
-
-  def loginInfo: LoginInfo = LoginInfo(credentialProviderId, email)
+                 password: Option[String]
+               ) extends Identity{
+  def passwordInfo = PasswordInfo(BCryptSha256PasswordHasher.ID,password.get)
 }
 
 object User {
@@ -25,7 +24,9 @@ object User {
   import compat.bson2json._
   import compat.json2bson._
 
-  implicit val userReader = Macros.reader[User]
-  implicit val userFormat = Json.format[User]
+//  implicit val passwordInfoJsonFormat: OFormat[PasswordInfo] = Json.format[PasswordInfo]
+  implicit val userReader: BSONDocumentReader[User] = Macros.reader[User]
+  implicit val userJsonFormat: Format[User] = Json.format[User]
+  implicit val userFormat: OFormat[User] = Json.format[User] // for mongodb
 }
 

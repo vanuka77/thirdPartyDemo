@@ -1,7 +1,9 @@
-package models.daos
+package models.daos.silhouette
 
 import com.mohiva.play.silhouette.api.repositories.AuthenticatorRepository
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
+import models.daos.CookieAuthenticatorDAO
+import reactivemongo.api.bson.BSONDocument
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,6 +18,7 @@ class AuthenticatorRepImpl @Inject()(val cookieAuthenticatorDAO: CookieAuthentic
   override def update(authenticator: CookieAuthenticator): Future[CookieAuthenticator] = cookieAuthenticatorDAO.update(authenticator.id, authenticator).map(_ => authenticator)
 
   override def remove(id: String): Future[Unit] = cookieAuthenticatorDAO.remove(id).map(_ => ())
+
 }
 
 

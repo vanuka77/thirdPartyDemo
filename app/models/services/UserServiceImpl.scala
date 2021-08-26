@@ -17,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
  */
 class UserServiceImpl @Inject()(userDAO: UserDAO)(implicit ex: ExecutionContext) extends UserService {
 
-  def retrieve(id: String): Future[Option[User]] = userDAO.findById(id)
+//  def retrieve(id: String): Future[Option[User]] = userDAO.findById(id)
 
   def retrieve(loginInfo: LoginInfo): Future[Option[User]] = userDAO.find(loginInfo)
 

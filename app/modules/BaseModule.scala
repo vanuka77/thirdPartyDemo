@@ -3,6 +3,7 @@ package modules
 import com.google.inject.AbstractModule
 import com.mohiva.play.silhouette.api.repositories.AuthenticatorRepository
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
+import models.daos.silhouette.AuthenticatorRepImpl
 //import models.CookieAuthenticator
 import models.daos._
 import models.services.{UserService, UserServiceImpl}
