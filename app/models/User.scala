@@ -2,20 +2,24 @@ package models
 
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import com.mohiva.play.silhouette.password.BCryptSha256PasswordHasher
 import play.api.libs.json.{Format, Json, OFormat}
 import reactivemongo.api.bson.{BSONDocumentReader, BSONObjectID, Macros}
 
 case class User(
                  _id: Option[BSONObjectID],
-                 loginInfo: LoginInfo,
                  credentialProviderId: String,
                  email: String,
                  name: String,
                  lastName: String,
                  password: Option[String]
                ) extends Identity{
-  def passwordInfo = PasswordInfo(BCryptSha256PasswordHasher.ID,password.get)
+
+  def loginInfo = LoginInfo(CredentialsProvider.ID, email)
+
+  def passwordInfo = PasswordInfo(BCryptSha256PasswordHasher.ID, password.get)
+
 }
 
 object User {

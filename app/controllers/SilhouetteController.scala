@@ -2,19 +2,18 @@ package controllers
 
 import com.mohiva.play.silhouette.api.actions.{SecuredActionBuilder, UnsecuredActionBuilder}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
-import com.mohiva.play.silhouette.api.services.{AuthenticatorService, AvatarService}
+import com.mohiva.play.silhouette.api.services.AuthenticatorService
 import com.mohiva.play.silhouette.api.util.{Clock, PasswordHasherRegistry}
 import com.mohiva.play.silhouette.api.{EventBus, Silhouette}
-import com.mohiva.play.silhouette.impl.providers.{CredentialsProvider, GoogleTotpProvider, SocialProviderRegistry}
-import javax.inject.Inject
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import models.services._
 import play.api.Logging
 import play.api.http.FileMimeTypes
 import play.api.i18n.{I18nSupport, Langs, MessagesApi}
 import play.api.mvc._
-import utils.auth.CookieAuthenticatorEnvironment
+import utils.auth.CookieEnv
 
-import scala.concurrent.duration.FiniteDuration
+import javax.inject.Inject
 
 abstract class SilhouetteController(override protected val controllerComponents: SilhouetteControllerComponents)
   extends MessagesAbstractController(controllerComponents) with SilhouetteComponents with I18nSupport with Logging {
@@ -33,8 +32,6 @@ abstract class SilhouetteController(override protected val controllerComponents:
 
   def credentialsProvider: CredentialsProvider = controllerComponents.credentialsProvider
 
-  def rememberMeConfig: RememberMeConfig = controllerComponents.rememberMeConfig
-
   def silhouette: Silhouette[EnvType] = controllerComponents.silhouette
 
   def authenticatorService: AuthenticatorService[AuthType] = silhouette.env.authenticatorService
@@ -43,7 +40,7 @@ abstract class SilhouetteController(override protected val controllerComponents:
 }
 
 trait SilhouetteComponents {
-  type EnvType = CookieAuthenticatorEnvironment
+  type EnvType = CookieEnv
   type AuthType = EnvType#A
   type IdentityType = EnvType#I
 
@@ -52,8 +49,6 @@ trait SilhouetteComponents {
   def authInfoRepository: AuthInfoRepository
 
   def passwordHasherRegistry: PasswordHasherRegistry
-
-  def rememberMeConfig: RememberMeConfig
 
   def clock: Clock
 
@@ -65,11 +60,10 @@ trait SilhouetteComponents {
 trait SilhouetteControllerComponents extends MessagesControllerComponents with SilhouetteComponents
 
 final case class DefaultSilhouetteControllerComponents @Inject()(
-                                                                  silhouette: Silhouette[CookieAuthenticatorEnvironment],
+                                                                  silhouette: Silhouette[CookieEnv],
                                                                   userService: UserService,
                                                                   authInfoRepository: AuthInfoRepository,
                                                                   passwordHasherRegistry: PasswordHasherRegistry,
-                                                                  rememberMeConfig: RememberMeConfig,
                                                                   clock: Clock,
                                                                   credentialsProvider: CredentialsProvider,
                                                                   messagesActionBuilder: MessagesActionBuilder,
@@ -80,16 +74,3 @@ final case class DefaultSilhouetteControllerComponents @Inject()(
                                                                   fileMimeTypes: FileMimeTypes,
                                                                   executionContext: scala.concurrent.ExecutionContext
                                                                 ) extends SilhouetteControllerComponents
-
-trait RememberMeConfig {
-  def expiry: FiniteDuration
-
-  def idleTimeout: Option[FiniteDuration]
-
-  def cookieMaxAge: Option[FiniteDuration]
-}
-
-final case class DefaultRememberMeConfig(
-                                          expiry: FiniteDuration,
-                                          idleTimeout: Option[FiniteDuration],
-                                          cookieMaxAge: Option[FiniteDuration]) extends RememberMeConfig

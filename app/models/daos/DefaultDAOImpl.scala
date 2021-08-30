@@ -14,14 +14,6 @@ abstract class DefaultDAOImpl[T](implicit val jsonFormat: OFormat[T],
                                  implicit val reader: BSONDocumentReader[T],
                                  implicit val exec: ExecutionContext) extends DefaultDAO[T] {
 
-  import play.api.libs.json.JodaWrites
-
-  implicit val dateTimeWriter: Writes[DateTime] = JodaWrites.jodaDateWrites("dd/MM/yyyy HH:mm:ss")
-
-  import play.api.libs.json.JodaReads
-
-  implicit val dateTimeJsReader: Reads[DateTime] = JodaReads.jodaDateReads("yyyyMMddHHmmss")
-
   protected def idSelector(id: String): BSONDocument = BSONDocument("_id" -> BSONObjectID.parse(id).get)
 
   override def insert(item: T): Future[T] = {

@@ -1,0 +1,13 @@
+@import helper._
+@import models.forms.UserLoginForm
+@(userForm: Form[UserLoginForm.Data])(implicit messages: Messages)
+
+@main("Log in form") {
+    <h1>Log in form</h1>
+}
+
+@form(action = routes.SignInController.process()) {
+    @inputText(userForm("email"))
+    @inputPassword(userForm("password"))
+    <button>Log in </button>
+}

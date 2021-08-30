@@ -16,7 +16,7 @@ import scala.concurrent.Future
 class CustomSecuredErrorHandler @Inject() (val messagesApi: MessagesApi) extends SecuredErrorHandler with I18nSupport {
 
   /**
-   * Called when a user is not authenticated.
+   * Called when a userRegistration is not authenticated.
    *
    * As defined by RFC 2616, the status code of the response should be 401 Unauthorized.
    *
@@ -28,7 +28,7 @@ class CustomSecuredErrorHandler @Inject() (val messagesApi: MessagesApi) extends
   }
 
   /**
-   * Called when a user is authenticated but not authorized.
+   * Called when a userRegistration is authenticated but not authorized.
    *
    * As defined by RFC 2616, the status code of the response should be 403 Forbidden.
    *

@@ -12,7 +12,7 @@ import scala.concurrent.Future
 class CustomUnsecuredErrorHandler extends UnsecuredErrorHandler {
 
   /**
-   * Called when a user is authenticated but not authorized.
+   * Called when a userRegistration is authenticated but not authorized.
    *
    * As defined by RFC 2616, the status code of the response should be 403 Forbidden.
    *

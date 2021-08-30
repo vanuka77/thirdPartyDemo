@@ -3,7 +3,7 @@ package modules
 import com.google.inject.AbstractModule
 import com.mohiva.play.silhouette.api.repositories.AuthenticatorRepository
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
-import models.daos.silhouette.AuthenticatorRepImpl
+import models.daos.silhouette.AuthenticatorRepositoryImpl
 //import models.CookieAuthenticator
 import models.daos._
 import models.services.{UserService, UserServiceImpl}
@@ -19,6 +19,6 @@ class BaseModule extends AbstractModule with ScalaModule {
   override def configure(): Unit = {
 //    bind[UserDAO].to[UserDAO]
     bind[UserService].to[UserServiceImpl]
-    bind[AuthenticatorRepository[CookieAuthenticator]].to[AuthenticatorRepImpl]
+    bind[AuthenticatorRepository[CookieAuthenticator]].to[AuthenticatorRepositoryImpl]
   }
 }
