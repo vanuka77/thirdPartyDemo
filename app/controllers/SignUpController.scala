@@ -44,7 +44,7 @@ class SignUpController @Inject()(
           userData.lastName,
           Some(passwordHasherRegistry.current.hash(userData.password).password)
         )
-        println(userData.email)
+//        println(userData.email)
         userService.save(newUser).map(u => Ok(Json.toJson(u.copy(password = None))))
       }
     )

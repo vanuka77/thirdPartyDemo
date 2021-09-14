@@ -1,3 +1,5 @@
+
+
 name := """mongodb_silhouette_example"""
 organization := "com.sysgears"
 
@@ -6,7 +8,7 @@ version := "1.0-SNAPSHOT"
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 resolvers += Resolver.jcenterRepo
 resolvers += "SonatlibraryDependencies += guice\nlibraryDependencies += \"org.scalatestplus.play\" %% \"scalatestplus-play\" % \"5.0.0\" % Testype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
-
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
 val playSilhouetteVersion = "7.0.0"
 scalaVersion := "2.13.6"
@@ -29,5 +31,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json-joda" % "2.7.4",
   guice,
   filters,
-  ehcache
+  ehcache,
+  ws,
+  "joda-time" % "joda-time" % "2.10.10",
+  "com.adrianhurt" %% "play-bootstrap" % "1.6.1-P28-B4"
 )

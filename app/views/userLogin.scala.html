@@ -6,8 +6,20 @@
     <h1>Log in form</h1>
 }
 
-@form(action = routes.SignInController.process()) {
-    @inputText(userForm("email"))
-    @inputPassword(userForm("password"))
-    <button>Log in </button>
+@*    @b4.inline.form(routes.SignInController.process) { implicit ifc =>*@
+@*    @b4.email( userForm("foo"), Symbol("_hiddenLabel") -> "Email", Symbol("placeholder") -> "example@mail.com" )*@
+@*    @b4.password( userForm("foo"), Symbol("_hiddenLabel") -> "Password", Symbol("placeholder") -> "Password" )*@
+@*    @b4.submit(Symbol("class") -> "btn btn-success"){ Sign in }*@
+@*    }*@
+@implicitFC = @{ b4.horizontal.fieldConstructor("col-md-2", "col-md-10") }
+@b4.form(routes.SignInController.process) {
+    @b4.text( userForm("foo"), '_label -> "Input Text", 'placeholder -> "A simple text..." )
+    @b4.checkbox( userForm("foo"), '_text -> "Checkbox", 'checked -> true )
+    @b4.submit(Symbol("class") -> "btn btn-secondary"){ <i class="fa fa-ok"></i> Save changes }
 }
+
+@* @form(action = routes.SignInController.process()) {*@
+@*    @inputText(userForm("email"))*@
+@*    @inputPassword(userForm("password"))*@
+@*    <button>Log in </button>*@
+@*}*@

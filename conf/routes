@@ -4,11 +4,18 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET         /singUp               controllers.SignUpController.indexForm()
-POST        /signUp               controllers.SignUpController.process()
-GET         /signIn               controllers.SignInController.indexForm()
-POST        /signIn               controllers.SignInController.process()
-GET         /changeCounter        controllers.ChangeCounterController.changeCounter()
+GET         /signUp                 controllers.SignUpController.indexForm()
+POST        /signUp                 controllers.SignUpController.process()
+GET         /signIn                 controllers.SignInController.indexForm()
+POST        /signIn                 controllers.SignInController.process()
+GET         /changeCounter          controllers.ChangeCounterController.changeCounter()
+
+GET         /signIn2                controllers.SignIn2Controller.process()
+POST        /signIn2                controllers.SignIn2Controller.process()
+
+GET         /webhook/link           controllers.WebHookLinking.link()
+GET         /webhook/success        controllers.WebHookLinking.success()
+GET         /webhook/fraud          controllers.WebHookLinking.fraud()
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file         controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file           controllers.Assets.versioned(path="/public", file: Asset)

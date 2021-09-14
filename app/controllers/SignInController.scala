@@ -40,7 +40,7 @@ class SignInController @Inject()(
           for {
             authenticator <- silhouette.env.authenticatorService.create(loginInfo)
             authToken <- silhouette.env.authenticatorService.init(authenticator)
-            res <- silhouette.env.authenticatorService.embed(authToken, Ok("Login success!"))
+            res <- silhouette.env.authenticatorService.embed(authToken, Redirect(routes.SignIn2Controller.process()))
           } yield res
         }.recover {
           case p: ProviderException => {
