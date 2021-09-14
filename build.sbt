@@ -1,5 +1,4 @@
 
-
 name := """mongodb_silhouette_example"""
 organization := "com.sysgears"
 
