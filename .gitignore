@@ -7,5 +7,5 @@ target
 /.project
 /.settings
 /RUNNING_PID
-heroku
-.scalafmt.conf
+heroku.*
+.scalafmt.*
