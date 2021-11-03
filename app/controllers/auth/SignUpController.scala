@@ -31,7 +31,7 @@ class SignUpController @Inject()(
       },
       userData => {
         userService.retrieveByEmail(userData.email) flatMap {
-          case _ => Future.successful(BadRequest(views.html.userSignUp(signUpForm, Some(s"Email [${userData.email}] is already in use!"))))
+          case Some(_) => Future.successful(BadRequest(views.html.userSignUp(signUpForm, Some(s"Email [${userData.email}] is already in use!"))))
           case None => val newUser = User(
             _id = Some(BSONObjectID.generate()),
             credentialProviderId = CredentialsProvider.ID,
