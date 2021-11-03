@@ -1,0 +1,10 @@
+@import play.api.Configuration
+@(config:Configuration)
+@myHome(isAuthenticated = true,isLinked = true) {
+    <h4 class="text">Notification has been sent to your device!</h4>
+    <input type="hidden" id="domain" value="@config.get[String]("deployDomain")">
+    <input type="hidden" id="ws-url" value="@controllers.websocket.routes.AuthenticationController.socket()">
+    <input type="hidden" id="changeCounter-url" value="@routes.ChangeCounterController.changeCounter()">
+}
+
+    <script src="@routes.Assets.versioned("javascripts/twoFactor.js")"></script>

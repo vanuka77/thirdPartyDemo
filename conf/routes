@@ -3,19 +3,31 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-# An example controller showing a sample home page
-GET         /signUp                 controllers.SignUpController.indexForm()
-POST        /signUp                 controllers.SignUpController.process()
-GET         /signIn                 controllers.SignInController.indexForm()
-POST        /signIn                 controllers.SignInController.process()
-GET         /changeCounter          controllers.ChangeCounterController.changeCounter()
+# An example controller showing a sample counter page
+GET         /                                    controllers.HomeController.home()
+GET         /signUp                              controllers.auth.SignUpController.getForm()
+POST        /signUp                              controllers.auth.SignUpController.processForm()
 
-GET         /signIn2                controllers.SignIn2Controller.process()
-POST        /signIn2                controllers.SignIn2Controller.process()
+GET         /authenticator/signIn                controllers.auth.AuthenticationController.getSignInForm()
+POST        /authenticator/signIn                controllers.auth.AuthenticationController.processSignInForm()
+GET         /authenticator/signOut               controllers.auth.AuthenticationController.signOut()
+GET         /authenticator/start2factor          controllers.auth.AuthenticationController.processTwoFactor()
+GET         /authenticator/link                  controllers.auth.LinkController.link()
+POST        /authenticator/link                  controllers.auth.LinkController.link()
+GET         /authenticator/unlink                controllers.auth.LinkController.unlink()
+GET         /authentication/link/socket          controllers.websocket.LinkController.socket()
+GET         /authentication/socket               controllers.websocket.AuthenticationController.socket()
 
-GET         /webhook/link           controllers.WebHookLinking.link()
-GET         /webhook/success        controllers.WebHookLinking.success()
-GET         /webhook/fraud          controllers.WebHookLinking.fraud()
+GET         /home                                controllers.HomeController.home()
 
-# Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file           controllers.Assets.versioned(path="/public", file: Asset)
+GET         /changeCounter                       controllers.ChangeCounterController.changeCounter()
+
+POST        /webhook/link                        controllers.auth.TwoFactorWebHookHandler.link()
+POST        /webhook/success                     controllers.auth.TwoFactorWebHookHandler.success()
+POST        /webhook/fraud                       controllers.auth.TwoFactorWebHookHandler.fraud()
+
+
+GET         /qr/code/:text/:width/:height        controllers.qr.QrCodeController.create(text:String,width:Int,height:Int)
+
+GET         /assets/*file                        controllers.Assets.versioned(path="/public", file: Asset)
+

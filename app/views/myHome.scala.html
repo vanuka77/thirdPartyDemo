@@ -1,0 +1,36 @@
+@import scala.language.postfixOps
+@import scala.language.dynamics
+@(isAuthenticated: Boolean = false, isLinked: Boolean = false)(content: Html)
+    @main("Home") {
+        <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
+
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="@routes.HomeController.home()">Home</a>
+                </li>
+            </ul>
+
+
+            @if(isLinked) {
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@controllers.auth.routes.LinkController.unlink()">Unlink</a>
+                    </li>
+                </ul>
+            }
+
+            @if(isAuthenticated) {
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@controllers.auth.routes.AuthenticationController.signOut()">Log out</a>
+                    </li>
+                </ul>
+            }
+
+        </nav>
+        <div style="width: 30%;
+            margin: 10px auto;
+            text-align: center">
+        @content
+        </div>
+    }

@@ -1,0 +1,26 @@
+@import helper._
+@import models.forms.UserSignInForm
+@(signInForm: Form[UserSignInForm.Data])(implicit messages: Messages)
+
+@main("Signing in form") {
+    <div style="width: 30%;
+        margin: 10px auto;
+        text-align: center">
+
+        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+
+        @b4.vertical.form(controllers.auth.routes.AuthenticationController.processSignInForm(), Symbol("class") -> "form-signin") { implicit vfc =>
+            @b4.email(signInForm("email"), Symbol("_label") -> "Input email", Symbol("class") -> "form-control")
+            @b4.password(signInForm("password"), Symbol("_label") -> "Input password", Symbol("class") -> "form-control")
+            @b4.submit(Symbol("class") -> "btn btn-lg btn btn-dark btn-block") {
+                <i class="fa fa-ok"></i>
+                Sign in
+            }
+        }
+        <div class="d-flex justify-content-center links">
+            Don't have an account?
+            <a href="@controllers.auth.routes.SignUpController.getForm()">Sign Up</a>
+        </div>
+
+    </div>
+}

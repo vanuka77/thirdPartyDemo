@@ -1,0 +1,18 @@
+@import play.api.Configuration
+@(config: Configuration)(implicit messages: Messages, request: RequestHeader)
+@myHome(isAuthenticated = true) {
+    <div id="link-start">
+        <h2>To get all access please link your account!</h2>
+        <input type="button" id ="link-button" class="btn btn-lg btn btn-dark btn-block" value="Link">
+    </div>
+    <div id="link-main" style="text-align: match-parent">
+    </div>
+    <input type="hidden" id="domain" value="@config.get[String]("deployDomain")">
+    <input type="hidden" id="ws-link-url" value="@controllers.websocket.routes.LinkController.socket()">
+    <input type="hidden" id="qr-code-url" value="@config.get[String]("qr.url")">
+    <input type="hidden" id="qr-code-height" value="@config.get[String]("qr.height")">
+    <input type="hidden" id="qr-code-width" value="@config.get[String]("qr.width")">
+    <input type="hidden" id="sign-out-url" value="@controllers.auth.routes.AuthenticationController.signOut()">
+    <script src="@routes.Assets.versioned("javascripts/link.js")"></script>
+
+}

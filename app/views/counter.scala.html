@@ -1,0 +1,15 @@
+@(counter: Int)(implicit messages: Messages)
+@myHome(isAuthenticated = true,isLinked = true) {
+    <div style="width: 30%;
+        margin: 10px auto;
+        text-align: center">
+        <h1 class="h1 mb-1 font-weight-normal">Counter changing</h1>
+        <p>Counter: @counter.toString </p>
+        @b4.vertical.form(routes.ChangeCounterController.changeCounter(), Symbol("class") -> "form-signin") { implicit vfc =>
+            @b4.submit(Symbol("class") -> "btn btn-lg btn-dark btn-block") {
+                <i class="fa fa-ok"></i>
+                Change
+            }
+        }
+    </div>
+}

@@ -1,64 +1,88 @@
 package models.daos
 
-import org.joda.time.DateTime
 import play.api.libs.json._
-import reactivemongo.api.Cursor
-import reactivemongo.api.bson.{BSONArray, BSONDocument, BSONDocumentReader, BSONObjectID}
-import reactivemongo.play.json.compat,
-compat.json2bson._,
-compat.bson2json._
+import reactivemongo.api.bson.{BSONDocument, BSONDocumentReader}
+import reactivemongo.play.json.compat.bson2json._
+import reactivemongo.play.json.compat.json2bson._
+
 import scala.concurrent.{ExecutionContext, Future}
 
+/** A DAO template with default realization.
+ *
+ * @tparam T  type of model to work with.
+ * @tparam ID type of id used to define a model in database([[reactivemongo.api.bson.BSONObjectID]] or [[String]]).
+ * */
+abstract class DefaultDAOImpl[T, ID](implicit val jsonFormat: OFormat[T],
+                                     implicit val reader: BSONDocumentReader[T],
+                                     implicit val exec: ExecutionContext) extends DefaultDAO[T, ID] {
 
-abstract class DefaultDAOImpl[T](implicit val jsonFormat: OFormat[T],
-                                 implicit val reader: BSONDocumentReader[T],
-                                 implicit val exec: ExecutionContext) extends DefaultDAO[T] {
-
-  protected def idSelector(id: String): BSONDocument = BSONDocument("_id" -> BSONObjectID.parse(id).get)
-
+  /** Inserts a model into the collection.
+   *
+   * @param item the model to insert
+   * @return an inserted model.
+   * */
   override def insert(item: T): Future[T] = {
     collection.flatMap(_.insert.one(item)).map { _ => item }
   }
 
+  /** Inserts a sequence of models into the collection.
+   *
+   * @param items the sequence of models.
+   * @param order should be ordered or not.
+   * @return an inserted models.
+   * */
   override def bulkInsert(items: Seq[T], order: Boolean = false): Future[Seq[T]] = {
     collection.flatMap { coll =>
       coll.insert(ordered = order).many(items).map(_ => items)
     }
   }
 
-  override def find(id: String): Future[Option[T]] = {
+  /** Returns a model with the given id.
+   *
+   * @param id an object to define a model in database.
+   * */
+  override def find(id: ID): Future[Option[T]] = {
     collection.flatMap(col => {
       col.find(idSelector(id)).one[T]
     })
   }
 
+  /** Returns models fits the query .
+   *
+   * @param query a query to database. */
   override def find(query: BSONDocument): Future[Option[T]] = {
     collection.flatMap(col => {
       col.find(query).one[T]
     })
   }
 
-  override def find(ids: List[String]): Future[Seq[T]] = {
-    val query = BSONDocument("_id" -> BSONDocument("$in" -> BSONArray(ids.map(BSONObjectID.parse(_).get))))
-    collection.flatMap(col => {
-      col.find(query).cursor[T]().collect[Seq](100, Cursor.FailOnError[Seq[T]]())
-    })
-  }
-
-  override def update(id: String, newItem: T): Future[Option[T]] = {
+  /** Updates a model with the given id .
+   *
+   * @param id      an object to define a model in database.
+   * @param newItem a new model.
+   * @return an updated model from database.
+   * */
+  override def update(id: ID, newItem: T): Future[Option[T]] = {
     collection.flatMap(_.findAndUpdate(idSelector(id), newItem, true) map (res => res.result[T]))
   }
 
-  override def remove(id: String): Future[Option[T]] = {
+  /** Removes a model with the given id .
+   *
+   * @param id an object to define a model in database.
+   * @return a removed model. */
+  override def remove(id: ID): Future[Option[T]] = {
     collection.flatMap(col => {
       col.findAndRemove(idSelector(id)).map(_.result[T])
     })
   }
 
-  protected def optionQuery[A](field: Option[A])(genQuery: => BSONDocument): BSONDocument = {
-    field match {
-      case Some(f) => genQuery
-      case None => BSONDocument.empty
-    }
+  /** Returns all models in the collection .
+   *
+   * @param offset an amount of models to skip from the beginning. */
+  override def getAll(offset: Option[Int] = None): Future[Seq[T]] = {
+    collection.flatMap(col => {
+      col.find(BSONDocument.empty).skip(offset.getOrElse(0)).cursor[T]().collect[Seq]()
+    })
   }
+
 }

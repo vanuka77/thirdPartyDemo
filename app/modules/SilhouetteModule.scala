@@ -1,32 +1,30 @@
 package modules
 
 import com.google.inject.{AbstractModule, Provides}
-import com.mohiva.play.silhouette.api.actions.{SecuredAction, SecuredErrorHandler, UnsecuredAction, UnsecuredErrorHandler, UserAwareAction}
+import com.mohiva.play.silhouette.api.actions._
 import com.mohiva.play.silhouette.api.crypto.{Crypter, CrypterAuthenticatorEncoder, Signer}
 import com.mohiva.play.silhouette.api.repositories.{AuthInfoRepository, AuthenticatorRepository}
 import com.mohiva.play.silhouette.api.services.AuthenticatorService
 import com.mohiva.play.silhouette.api.util._
 import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, SilhouetteProvider}
 import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSigner, JcaSignerSettings}
-import com.mohiva.play.silhouette.impl.authenticators.{CookieAuthenticator, CookieAuthenticatorService, CookieAuthenticatorSettings}
+import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticatorSettings
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, SecureRandomIDGenerator}
 import com.mohiva.play.silhouette.password.{BCryptPasswordHasher, BCryptSha256PasswordHasher}
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
-import controllers.{DefaultSilhouetteControllerComponents, SilhouetteControllerComponents}
+import controllers.auth.{DefaultSilhouetteControllerComponents, SilhouetteControllerComponents}
 import models.daos.UserDAOImpl
-import models.daos.silhouette.PasswordInfoImpl
-import utils.auth.{CustomSecuredErrorHandler, CustomUnsecuredErrorHandler}
-//import models.daos.UserDAO
-//import models.daos.impl.PasswordInfoImpl
 import models.services.UserService
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.mvc.CookieHeaderEncoding
-import utils.auth.CookieEnv
+import utils.silhouette.authenticator.ExtendedCookieAuthenticator
+import utils.silhouette.authenticator.repository.AuthenticatorRepositoryImpl
+import utils.silhouette.authenticator.service.ExtendedCookieAuthenticatorServiceImpl
+import utils.silhouette.{CustomSecuredErrorHandler, CustomUnsecuredErrorHandler, ExtendedCookieEnv, PasswordInfoImpl}
 
-//import util.auth.CookieEnv
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.jdk.DurationConverters._
 
@@ -40,6 +38,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator())
     bind[UnsecuredErrorHandler].to[CustomUnsecuredErrorHandler]
     bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
+    bind[AuthenticatorRepository[ExtendedCookieAuthenticator]].to[AuthenticatorRepositoryImpl]
   }
 
   /**
@@ -84,12 +83,12 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
                                    signer: Signer,
                                    cookieHeaderEncoding: CookieHeaderEncoding,
                                    fingerprintGenerator: FingerprintGenerator,
-                                   authenticatorRepository: AuthenticatorRepository[CookieAuthenticator],
+                                   authenticatorRepository: AuthenticatorRepository[ExtendedCookieAuthenticator],
                                    idGenerator: IDGenerator,
                                    cookieAuthenticatorSettings: CookieAuthenticatorSettings,
-                                   clock: Clock): AuthenticatorService[CookieAuthenticator] = {
+                                   clock: Clock): AuthenticatorService[ExtendedCookieAuthenticator] = {
     val encoder = new CrypterAuthenticatorEncoder(crypter)
-    new CookieAuthenticatorService(cookieAuthenticatorSettings, Some(authenticatorRepository), signer,
+    new ExtendedCookieAuthenticatorServiceImpl(cookieAuthenticatorSettings, Some(authenticatorRepository), signer,
       cookieHeaderEncoding, encoder, fingerprintGenerator, idGenerator, clock)
   }
 
@@ -146,9 +145,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    */
   @Provides
   def provideEnvironment(userService: UserService,
-                         authenticatorService: AuthenticatorService[CookieAuthenticator],
-                         eventBus: EventBus): Environment[CookieEnv] = {
-    Environment[CookieEnv](userService, authenticatorService, Seq(), eventBus)
+                         authenticatorService: AuthenticatorService[ExtendedCookieAuthenticator],
+                         eventBus: EventBus): Environment[ExtendedCookieEnv] = {
+    Environment[ExtendedCookieEnv](userService, authenticatorService, Seq(), eventBus)
   }
 
   /**
@@ -157,9 +156,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * @return silhouette action builder with cookie auth environment.
    */
   @Provides
-  def provideSilhouetteProvider(environment: Environment[CookieEnv], securedAction: SecuredAction, unsecuredAction: UnsecuredAction,
-                                userAwareAction: UserAwareAction): Silhouette[CookieEnv] = {
-    new SilhouetteProvider[CookieEnv](environment, securedAction, unsecuredAction, userAwareAction)
+  def provideSilhouetteProvider(environment: Environment[ExtendedCookieEnv], securedAction: SecuredAction, unsecuredAction: UnsecuredAction,
+                                userAwareAction: UserAwareAction): Silhouette[ExtendedCookieEnv] = {
+    new SilhouetteProvider[ExtendedCookieEnv](environment, securedAction, unsecuredAction, userAwareAction)
   }
 
   /**
@@ -172,5 +171,4 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   def providesSilhouetteComponents(components: DefaultSilhouetteControllerComponents): SilhouetteControllerComponents = {
     components
   }
-
 }

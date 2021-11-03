@@ -1,0 +1,23 @@
+@import models.forms.UserSignUpForm
+@import helper._
+@(userSignUpForm: Form[UserSignUpForm.Data], errorText: Option[String] = None)(implicit messages: Messages)
+
+    @main("User signing up form") {
+        <div style="width: 30%;
+            margin: 10px auto;
+            text-align: center">
+            <h1 class="h3 mb-3 font-weight-normal">@errorText.getOrElse("")</h1>
+            <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
+            @b4.vertical.form(controllers.auth.routes.SignUpController.processForm(),
+                Symbol("class") -> "form-signin") { implicit vfc =>
+                @b4.email(userSignUpForm("email"), Symbol("_label") -> "Input email", Symbol("class") -> "form-control")
+                @b4.text(userSignUpForm("name"), Symbol("_label") -> "Input name", Symbol("class") -> "form-control")
+                @b4.text(userSignUpForm("lastName"), Symbol("_label") -> "Input last name", Symbol("class") -> "form-control")
+                @b4.password(userSignUpForm("password"), Symbol("_label") -> "Input password", Symbol("class") -> "form-control")
+                @b4.submit(Symbol("class") -> "btn btn-lg btn btn-dark btn-block") {
+                    <i class="fa fa-ok"></i>
+                    Sign up
+                }
+            }
+        </div>
+    }
